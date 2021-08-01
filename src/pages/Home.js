@@ -1,32 +1,66 @@
-import React from 'react';
+import React , { useState} from 'react';
 import { StatusBar } from 'react-native';
-import { StyleSheet, Text, View, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, Alert} from 'react-native';
 import { Routes } from './src/routes';
 //import { MyButton } from '../components/MyButton';
-import ifrn from '../../assets/imgs/ifrn.png';
+import IF from '../../assets/imgs/IF.png';
 import { Input } from '../components/Input';
 import { MyButton } from '../components/MyButton';
+import api from '../services/api';
 
 
-export function Home({ navigation }) {
+export function Home({ navigation , route }) {
+  
+  const [matricula,setMatricula]= useState("");
+  const [password,setPassword]= useState("");
+
+  /* função para realizar chamada ao suap */
+  async function handleLogin(){
+      /* pegando variáveis pra realizar login */
+    var params = new URLSearchParams();
+    params.append('username', matricula);
+    params.append('password', password);
+    try{
+     /* requisitando m token */
+      const response = await api.post('autenticacao/token/', params);
+      const { token } = response.data;  /*retornado uma resposta  pegando token */
+
+    /*  console.log(response.data)  *//* retornando um token */
+    
+      /* pegando  informações do usuario  no cabeçalho*/
+      const responseUser = await api.get('/minhas-informacoes/meus-dados/', {
+         headers:{
+           'authorization':'jwt' + token,
+           'Accept':'application/json',
+           'Content-Type': 'application/json'
+         }
+      });
+      /* retornando os dados  */
+      console.log(responseUser.data);
+    }catch{
+      //Alert.alert("Erro na autenticação!");
+    }
+    navigation.navigate('Details');
+     
+  }
 
     return (
 
         <View style={styles.container}>
-
             <View style={styles.logo}>
-                <ImageBackground source={ifrn} style={styles.background} />
-                <Text style={styles.title}>IFRN DO</Text>
+                <ImageBackground source={IF} style={styles.background} />
+                <Text style={styles.title}>IFRN.DO</Text>
             </View>
            
             <View style={styles.input}>
-                <Input placeholder="Matrícula" />
-                <Input placeholder="Senha"  secureTextEntry={false} />   
+                <Input placeholder="Matrícula" keyboardType='numeric'  onChangeText={x=> setMatricula(x)}/>
+                <Input placeholder="Senha"  secureTextEntry={true} onChangeText={x => setPassword(x)}/>   
+            
             </View>
 
             <View>                               
-                    <MyButton  title="Details" onPress={() => navigation.navigate('Details')} /> 
-            </View>
+                    <MyButton onPress={handleLogin} /> 
+            </View> 
 
         </View>
     )
@@ -41,7 +75,7 @@ const styles = StyleSheet.create({
 
     background: {
         height: 100,
-        width: 88,
+        width: 150,
         alignItems: 'center',
         padding: 100,
 
@@ -59,7 +93,9 @@ const styles = StyleSheet.create({
         right: 40,
         width: '85%',
         height: 500,
-        margin: -120
+        margin: -120,
+        alignItems: 'center',
+        left:-22,
     },
     input: {
         height: 100,
