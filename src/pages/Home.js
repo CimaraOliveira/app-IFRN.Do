@@ -1,67 +1,62 @@
-import React , { useState} from 'react';
-import { StatusBar } from 'react-native';
-import { StyleSheet, Text, View, ImageBackground, Alert} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Image, Alert } from 'react-native';
 import { Routes } from './src/routes';
-//import { MyButton } from '../components/MyButton';
-import IF from '../../assets/imgs/IF.png';
 import { Input } from '../components/Input';
 import { MyButton } from '../components/MyButton';
 import api from '../services/api';
 
+export function Home({ navigation }) {
 
-export function Home({ navigation , route }) {
-  
-  const [matricula,setMatricula]= useState("");
-  const [password,setPassword]= useState("");
 
-  /* função para realizar chamada ao suap */
-  async function handleLogin(){
-      /* pegando variáveis pra realizar login */
-    var params = new URLSearchParams();
-    params.append('username', matricula);
-    params.append('password', password);
-    try{
-     /* requisitando m token */
-      const response = await api.post('autenticacao/token/', params);
-      const { token } = response.data;  /*retornado uma resposta  pegando token */
+    const [matricula, setMatricula] = useState("");
+    const [password, setPassword] = useState("");
 
-    /*  console.log(response.data)  *//* retornando um token */
-    
-      /* pegando  informações do usuario  no cabeçalho*/
-      const responseUser = await api.get('/minhas-informacoes/meus-dados/', {
-         headers:{
-           'authorization':'jwt' + token,
-           'Accept':'application/json',
-           'Content-Type': 'application/json'
-         }
-      });
-      /* retornando os dados  */
-      console.log(responseUser.data);
-    }catch{
-      //Alert.alert("Erro na autenticação!");
+
+
+    /* função para realizar chamada ao suap */
+    async function handleLogin() {
+        /* pegando variáveis pra realizar login */
+        var params = new URLSearchParams();
+        params.append('username', matricula);
+        params.append('password', password);
+        try {
+            /* requisitando m token */
+            const response = await api.post('autenticacao/token/', params);
+            console.log(response.data); /* retornando um token */
+            const { token } = response.data;   /*retornado uma resposta  pegando token */
+            console.log(token);
+            /* pegando  informações do usuario  no cabeçalho*/
+            const responseUser = await api.get('/minhas-informacoes/meus-dados/', {
+                headers: {
+                    'authorization': 'jwt ' + token,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const { data } = responseUser
+            console.log(data);
+            navigation.navigate('Details', { login: data });
+
+        } catch {
+            Alert.alert("Erro na autenticação!");
+        }
     }
-    navigation.navigate('Details');
-     
-  }
-
     return (
-
         <View style={styles.container}>
-            <View style={styles.logo}>
-                <ImageBackground source={IF} style={styles.background} />
+            <View style={styles.imagem}>
+                <Image
+                    source={require('../../assets/imgs/IF.png')}
+                    style={styles.logo}
+                />
                 <Text style={styles.title}>IFRN.DO</Text>
             </View>
-           
+
             <View style={styles.input}>
-                <Input placeholder="Matrícula" keyboardType='numeric'  onChangeText={x=> setMatricula(x)}/>
-                <Input placeholder="Senha"  secureTextEntry={true} onChangeText={x => setPassword(x)}/>   
-            
+                <Input placeholder="Matrícula" keyboardType='numeric' onChangeText={x => setMatricula(x)} />
+                <Input placeholder="Senha" secureTextEntry={true} onChangeText={x => setPassword(x)} />
+                <MyButton onPress={handleLogin} />
             </View>
-
-            <View>                               
-                    <MyButton onPress={handleLogin} /> 
-            </View> 
-
         </View>
     )
 
@@ -82,20 +77,24 @@ const styles = StyleSheet.create({
     },
     logo: {
         height: 300,
-        width: '120%',
+        width: "40%",
+        alignItems: 'center'
+    },
+    imagem: {
+        height: 350,
+        width: '100%',
         alignItems: 'center',
-        padding: 80
+
     },
     title: {
-        padding: 50,
-        fontSize: 30,
+        fontSize: 35,
         color: '#FFFFFF',
-        right: 40,
         width: '85%',
         height: 500,
-        margin: -120,
+        margin: -30,
         alignItems: 'center',
-        left:-22,
+        left: 80,
+        justifyContent: 'center'
     },
     input: {
         height: 100,

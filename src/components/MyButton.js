@@ -4,10 +4,14 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 export function MyButton(props) {
 
   return (
-
+    <View >
+    <View>
+    <Text >{props.user}</Text>
+     </View>
     <TouchableOpacity style={styles.button} activeOpacity={0.6} onPress={props.onPress}>
       <Text style={styles.text}>Entrar</Text>
     </TouchableOpacity>
+    </View>
 
   )
 };
@@ -15,15 +19,16 @@ export function MyButton(props) {
 const styles = StyleSheet.create({
 
   button: {
-    width: 300,
+    width: 320,
     height: 50,
-    top: -10,
-    borderRadius: 15,
+    top: 50,
+    borderRadius: 5,
     backgroundColor: '#808080',
     margin: 29,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
+    
+    
 
   },
   text: {
